@@ -174,6 +174,16 @@ function App() {
         </div>
       </div>
 
+      {/* Version Footer */}
+      <footer className="bg-gray-900 border-t border-gray-700 py-4">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center text-gray-400 text-sm">
+            <p>16-Step Audio Sequencer v1.0.0</p>
+            <p className="text-xs text-gray-500 mt-1">Built with React, TypeScript & Web Audio API</p>
+          </div>
+        </div>
+      </footer>
+
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
