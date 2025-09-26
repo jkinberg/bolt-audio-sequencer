@@ -26,6 +26,11 @@
   scroll-behavior: smooth;
 }
 
+/* Improve touch responsiveness on iOS */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
 /* Hide scrollbar on mobile for cleaner look */
 @media (max-width: 768px) {
   .touch-scroll::-webkit-scrollbar {

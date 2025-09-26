@@ -65,7 +65,16 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
           return (
             <button
               key={step.id}
-              onClick={() => onStepClick(step.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Step clicked:', step.id, 'Selected sound:', selectedSound);
+                onStepClick(step.id);
+              }}
+              onTouchStart={(e) => {
+                // Prevent iOS from interfering with touch events
+                e.stopPropagation();
+              }}
               className={`
                 relative w-full h-full rounded-lg border-2 transition-all duration-200 
                 ${isCurrentStep ? 'border-yellow-400 shadow-lg shadow-yellow-400/50' : 'border-gray-400'}
@@ -73,6 +82,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
                 hover:scale-105 hover:shadow-lg
                 ${selectedSound ? 'cursor-pointer' : 'cursor-default'}
                 ${isCurrentStep ? 'animate-pulse' : ''}
+                touch-manipulation
               `}
               disabled={!selectedSound}
               title={selectedSound ? `Assign ${selectedSound} to step ${step.id}` : `Step ${step.id}`}

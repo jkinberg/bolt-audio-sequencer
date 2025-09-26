@@ -111,9 +111,13 @@ export const useSequencer = () => {
   }, [selectedSound]);
 
   const previewSound = useCallback((sound: SoundType) => {
-    if (sound) {
+    if (sound && sound !== 'delete') {
+      console.log('Previewing sound:', sound);
       audioEngine.initialize().then(() => {
+        console.log('Audio engine ready, playing sound:', sound);
         audioEngine.playSound(sound);
+      }).catch(error => {
+        console.error('Failed to preview sound:', error);
       });
     }
   }, []);

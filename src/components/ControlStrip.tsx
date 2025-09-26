@@ -1,6 +1,7 @@
 import React from 'react';
 import { Play, Pause, Trash2, Minus, Plus } from 'lucide-react';
 import { SoundType } from '../types';
+import { audioEngine } from '../utils/audioEngine';
 
 interface ControlStripProps {
   isPlaying: boolean;
@@ -91,12 +92,29 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             ].map(({ type, label, color }) => (
               <button
                 key={type}
-                onClick={() => {
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   console.log('Button clicked:', type);
+                  
                   // Initialize audio on first user interaction for iOS
-                  audioEngine.initialize();
+                  try {
+                    await audioEngine.initialize();
+                    console.log('Audio engine initialized successfully');
+                  } catch (error) {
+                    console.error('Failed to initialize audio engine:', error);
+                  }
+                  
                   onSoundSelect(type);
                   onSoundPreview(type);
+                }}
+                onTouchStart={async (e) => {
+                  // Additional touch handler for iOS
+                  try {
+                    await audioEngine.initialize();
+                  } catch (error) {
+                    console.error('Touch initialization failed:', error);
+                  }
                 }}
                 className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${color} ${
                   selectedSound === type ? 'ring-2 ring-white scale-105' : ''
@@ -109,7 +127,12 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             
             {/* Delete Button */}
             <button
-              onClick={() => onSoundSelect('delete')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Delete button clicked');
+                onSoundSelect('delete');
+              }}
               className={`px-3 py-2 rounded-md text-gray-300 font-medium transition-all duration-200 border-2 border-transparent hover:bg-gray-600/30 flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
                 selectedSound === 'delete' ? 'ring-2 ring-white scale-105' : ''
               }`}
