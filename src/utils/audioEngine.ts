@@ -2,45 +2,87 @@ class AudioEngine {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private isInitialized: boolean = false;
-  private initializationPromise: Promise<void> | null = null;
+  private hasUserInteracted: boolean = false;
 
-  initialize() {
-    // Return existing promise if already initializing
-    if (this.initializationPromise) {
-      return this.initializationPromise;
-    }
-    
-    // Return resolved promise if already initialized
-    if (this.audioContext && this.isInitialized) return;
-    
-    this.initializationPromise = this.doInitialize();
-    return this.initializationPromise;
-  }
-
-  private async doInitialize() {
-    if (this.audioContext && this.isInitialized) return;
+  // Must be called synchronously in a user event handler for iOS
+  initializeSync() {
+    if (this.isInitialized) return true;
     
     try {
-      console.log('Initializing AudioContext...');
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('Initializing AudioContext synchronously...');
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       
+      if (!AudioContextClass) {
+        console.error('AudioContext not supported');
+        return false;
+      }
+      
+      this.audioContext = new AudioContextClass();
       this.masterGain = this.audioContext.createGain();
       this.masterGain.gain.value = 0.7;
       this.masterGain.connect(this.audioContext.destination);
       
-      // Resume audio context if suspended (critical for iOS)
+      this.hasUserInteracted = true;
+      this.isInitialized = true;
+      
+      console.log('AudioContext created synchronously, state:', this.audioContext.state);
+      
+      // Resume if suspended (this can be async after creation)
       if (this.audioContext.state === 'suspended') {
-        console.log('AudioContext suspended, attempting to resume...');
-        await this.audioContext.resume();
-        console.log('AudioContext resumed, state:', this.audioContext.state);
+        console.log('Attempting to resume suspended AudioContext...');
+        this.audioContext.resume().then(() => {
+          console.log('AudioContext resumed successfully, state:', this.audioContext?.state);
+        }).catch(error => {
+          console.error('Failed to resume AudioContext:', error);
+        });
       }
       
-      this.isInitialized = true;
-      console.log('AudioContext initialized successfully, state:', this.audioContext.state);
+      return true;
     } catch (error) {
       console.error('Failed to initialize AudioContext:', error);
-      this.initializationPromise = null;
-      throw error;
+      return false;
+    }
+  }
+
+  // Legacy method for backward compatibility
+  initialize() {
+    return this.initializeSync();
+  }
+
+  isReady(): boolean {
+    return this.isInitialized && this.audioContext !== null && this.hasUserInteracted;
+  }
+
+  getAudioContextState(): string {
+    return this.audioContext?.state || 'not-initialized';
+  }
+
+  // Test method to create a simple beep for debugging
+  testBeep() {
+    if (!this.isReady()) {
+      console.log('AudioEngine not ready for test beep');
+      return;
+    }
+    
+    try {
+      const oscillator = this.audioContext!.createOscillator();
+      const gainNode = this.audioContext!.createGain();
+      
+      oscillator.frequency.value = 440; // A4 note
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, this.audioContext!.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext!.currentTime + 0.2);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain!);
+      
+      oscillator.start();
+      oscillator.stop(this.audioContext!.currentTime + 0.2);
+      
+      console.log('Test beep played');
+    } catch (error) {
+      console.error('Failed to play test beep:', error);
     }
   }
 

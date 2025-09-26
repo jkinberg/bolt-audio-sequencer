@@ -97,15 +97,22 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                   e.stopPropagation();
                   console.log('Button clicked:', type);
                   
-                  // Initialize audio synchronously in user event handler (critical for iOS)
-                  audioEngine.initialize();
+                  // Initialize audio synchronously - CRITICAL for iOS Safari
+                  const initialized = audioEngine.initializeSync();
+                  console.log('Audio initialized:', initialized, 'State:', audioEngine.getAudioContextState());
                   
                   onSoundSelect(type);
-                  onSoundPreview(type);
+                  
+                  // Small delay to ensure audio context is ready
+                  setTimeout(() => {
+                    onSoundPreview(type);
+                  }, 50);
                 }}
                 onTouchStart={(e) => {
-                  // Initialize audio on touch for iOS Safari
-                  audioEngine.initialize();
+                  e.preventDefault();
+                  // Initialize audio on touch start for iOS Safari
+                  const initialized = audioEngine.initializeSync();
+                  console.log('Touch - Audio initialized:', initialized, 'State:', audioEngine.getAudioContextState());
                 }}
                 className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${color} ${
                   selectedSound === type ? 'ring-2 ring-white scale-105' : ''

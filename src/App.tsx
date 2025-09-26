@@ -16,20 +16,42 @@ function App() {
     previewSound,
   } = useSequencer();
 
-  // Initialize audio on any user interaction for iOS compatibility
+  // Initialize audio on user interaction - CRITICAL for iOS Safari
   const handleUserInteraction = () => {
-    console.log('User interaction detected, initializing audio...');
-    audioEngine.initialize();
+    if (!audioEngine.isReady()) {
+      console.log('User interaction detected, initializing audio...');
+      const initialized = audioEngine.initializeSync();
+      console.log('Audio initialized:', initialized, 'State:', audioEngine.getAudioContextState());
+      
+      // Play a test beep to verify audio is working (optional)
+      if (initialized) {
+        setTimeout(() => {
+          console.log('Playing test beep...');
+          audioEngine.testBeep();
+        }, 100);
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900" onClick={handleUserInteraction} onTouchStart={handleUserInteraction} onTouchEnd={handleUserInteraction}>
+    <div 
+      className="min-h-screen bg-gray-900" 
+      onClick={handleUserInteraction} 
+      onTouchStart={handleUserInteraction}
+      onTouchEnd={handleUserInteraction}
+    >
       <div className="h-screen max-w-4xl mx-auto w-full flex flex-col">
         {/* Header */}
         <div className="text-center flex-shrink-0 p-3 pb-2">
           <div className="flex items-center justify-center gap-3 mb-2">
             <Music className="w-8 h-8 text-blue-400" />
             <h1 className="text-4xl font-bold text-white">Audio Sequencer</h1>
+          </div>
+          
+          {/* Audio Status Indicator for debugging */}
+          <div className="text-xs text-gray-500 mt-1">
+            Audio: {audioEngine.isReady() ? '✓ Ready' : '⚠ Tap to initialize'} 
+            {audioEngine.isReady() && ` (${audioEngine.getAudioContextState()})`}
           </div>
         </div>
 
