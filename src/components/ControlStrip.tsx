@@ -64,7 +64,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
         {/* Sound Selection */}
         <div className="w-full">
           <label className="text-white font-medium mb-3 block">Sounds:</label>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+          <div className="flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
             <div className="flex gap-2 flex-nowrap">
             {[
               { type: 'kick' as const, label: 'Kick', color: 'bg-red-600 hover:bg-red-700' },
@@ -93,7 +93,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             {/* Delete Button */}
             <button
               onClick={() => onSoundSelect('delete')}
-              className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 bg-red-600 hover:bg-red-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 border-2 border-red-500 hover:bg-red-500/20 flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
                 selectedSound === 'delete' ? 'ring-2 ring-white scale-105' : ''
               }`}
               title="Click to select delete mode, then click steps to remove sounds"
