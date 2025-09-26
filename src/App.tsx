@@ -16,10 +16,10 @@ function App() {
   } = useSequencer();
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col">
-      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col">
+    <div className="min-h-screen bg-gray-900">
+      <div className="h-screen max-w-4xl mx-auto w-full flex flex-col">
         {/* Header */}
-        <div className="text-center flex-shrink-0 p-4 pb-2">
+        <div className="text-center flex-shrink-0 p-3 pb-2">
           <div className="flex items-center justify-center gap-3 mb-2">
             <Music className="w-8 h-8 text-blue-400" />
             <h1 className="text-4xl font-bold text-white">Audio Sequencer</h1>
@@ -28,7 +28,7 @@ function App() {
         </div>
 
         {/* Control Strip */}
-        <div className="flex-shrink-0 px-4 pb-2">
+        <div className="flex-shrink-0 px-4 pb-3">
           <ControlStrip
             isPlaying={sequencerState.isPlaying}
             tempo={sequencerState.tempo}
@@ -41,7 +41,7 @@ function App() {
         </div>
 
         {/* Sequencer Grid */}
-        <div className="flex-1 min-h-0 p-4">
+        <div className="flex-1 min-h-0 px-4">
           <SequencerGrid
             steps={sequencerState.steps}
             currentStep={sequencerState.currentStep}
@@ -50,16 +50,19 @@ function App() {
             onStepClick={assignSoundToStep}
           />
         </div>
+      </div>
 
-        {/* Usage Instructions */}
-        <div className="bg-gray-800 p-3 mx-4 mb-4 rounded-lg shadow-lg flex-shrink-0">
-          <h3 className="text-white font-semibold mb-3">How to Use:</h3>
-          <ul className="text-gray-300 space-y-1 text-xs">
-            <li><span className="text-blue-400">1.</span> Select a sound (Kick, Snare, Hi-Hat, or Cymbal) from the control strip</li>
-            <li><span className="text-blue-400">2.</span> Click on any step in the 16-step grid to assign that sound</li>
-            <li><span className="text-blue-400">3.</span> Double-click sound buttons to preview them</li>
-            <li><span className="text-blue-400">4.</span> Adjust the tempo slider to change the playback speed</li>
-            <li><span className="text-blue-400">5.</span> Press Play to start the sequence - watch as each step lights up!</li>
+      {/* Usage Instructions - Below the fold */}
+      <div className="max-w-4xl mx-auto w-full">
+        <div className="bg-gray-800 p-6 mx-4 mb-8 rounded-lg shadow-lg">
+          <h3 className="text-white font-semibold mb-4 text-lg">How to Use:</h3>
+          <ul className="text-gray-300 space-y-2 text-sm">
+            <li><span className="text-blue-400 font-bold">1.</span> Select a sound (Kick, Snare, Hi-Hat, Cymbal, Hand Clap, or Cow Bell) from the control strip</li>
+            <li><span className="text-blue-400 font-bold">2.</span> Click on any step in the 16-step grid to assign that sound</li>
+            <li><span className="text-blue-400 font-bold">3.</span> Click sound buttons to preview them</li>
+            <li><span className="text-blue-400 font-bold">4.</span> Use the Delete button to remove sounds from steps</li>
+            <li><span className="text-blue-400 font-bold">5.</span> Adjust the tempo slider to change the playback speed</li>
+            <li><span className="text-blue-400 font-bold">6.</span> Press Play to start the sequence - watch as each step lights up!</li>
           </ul>
         </div>
       </div>
