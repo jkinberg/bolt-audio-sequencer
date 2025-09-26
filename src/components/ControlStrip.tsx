@@ -25,7 +25,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
   const bpm = tempo; // Tempo is now directly in BPM
 
   return (
-    <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg">
+    <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg" data-testid="control-strip">
       <div className="flex flex-col gap-4">
         {/* Transport Controls */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">

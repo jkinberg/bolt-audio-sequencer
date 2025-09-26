@@ -55,7 +55,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
   };
 
   return (
-    <div className="bg-gray-700 p-4 rounded-lg shadow-lg h-full flex flex-col">
+    <div className="bg-gray-700 p-4 rounded-lg shadow-lg h-full flex flex-col" data-testid="sequencer-grid">
       <div className="grid grid-cols-4 gap-3 w-full flex-1">
         {steps.map((step) => {
           const isCurrentStep = isPlaying && currentStep === step.id - 1;
