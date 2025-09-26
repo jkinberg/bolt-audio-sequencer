@@ -120,8 +120,8 @@ class AudioEngine {
   private createCymbal() {
     if (!this.audioContext || !this.masterGain) return;
 
-    // Create noise buffer for realistic cymbal sound
-    const bufferSize = this.audioContext.sampleRate * 0.8;
+    // Create noise buffer similar to hi-hat but longer
+    const bufferSize = this.audioContext.sampleRate * 0.4;
     const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
     const data = buffer.getChannelData(0);
     
@@ -132,31 +132,22 @@ class AudioEngine {
     const noiseSource = this.audioContext.createBufferSource();
     noiseSource.buffer = buffer;
     
-    const gainNode = this.audioContext.createGain();
-    
-    // High-pass filter for bright cymbal sound
+    // High-pass filter similar to hi-hat but lower frequency
     const filter = this.audioContext.createBiquadFilter();
     filter.type = 'highpass';
-    filter.frequency.value = 4000;
+    filter.frequency.value = 5000;
     
-    // Additional filter for shaping
-    const filter2 = this.audioContext.createBiquadFilter();
-    filter2.type = 'peaking';
-    filter2.frequency.value = 8000;
-    filter2.Q.value = 2;
-    filter2.gain.value = 6;
-
-    // Much quieter and shorter duration
-    gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.6);
+    const gainNode = this.audioContext.createGain();
+    // Louder than hi-hat but with longer decay
+    gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
 
     noiseSource.connect(filter);
-    filter.connect(filter2);
-    filter2.connect(gainNode);
-    filter.connect(this.masterGain);
+    filter.connect(gainNode);
+    gainNode.connect(this.masterGain);
 
     noiseSource.start();
-    noiseSource.stop(this.audioContext.currentTime + 0.6);
+    noiseSource.stop(this.audioContext.currentTime + 0.4);
   }
 
   private createHandClap() {
