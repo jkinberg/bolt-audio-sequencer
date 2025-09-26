@@ -56,7 +56,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
 
   return (
     <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-4 w-full">
         {steps.map((step) => {
           const isCurrentStep = isPlaying && currentStep === step.id - 1;
           const soundColor = getSoundColor(step.sound);
@@ -67,7 +67,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
               key={step.id}
               onClick={() => onStepClick(step.id)}
               className={`
-                relative w-20 h-20 rounded-lg border-2 transition-all duration-200 
+                relative w-full aspect-square rounded-lg border-2 transition-all duration-200 
                 ${isCurrentStep ? 'border-yellow-400 shadow-lg shadow-yellow-400/50' : 'border-gray-400'}
                 ${soundColor}
                 hover:scale-105 hover:shadow-lg
