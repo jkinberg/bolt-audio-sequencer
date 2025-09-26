@@ -74,6 +74,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
               <button
                 key={type}
                 onClick={() => {
+                  console.log('Button clicked:', type);
                   onSoundSelect(type);
                   onSoundPreview(type);
                 }}

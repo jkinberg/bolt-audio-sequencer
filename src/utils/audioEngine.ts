@@ -222,9 +222,11 @@ class AudioEngine {
   }
 
   playSound(sound: string) {
+    console.log('Playing sound:', sound);
     this.initialize().then(() => {
       switch (sound) {
         case 'kick':
+          console.log('Creating kick sound');
           this.createKick();
           break;
         case 'snare':
