@@ -24,21 +24,21 @@ class AudioEngine {
     const filter = this.audioContext.createBiquadFilter();
 
     oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(60, this.audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
+    oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
 
     filter.type = 'lowpass';
-    filter.frequency.value = 100;
+    filter.frequency.value = 150;
 
-    gainNode.gain.setValueAtTime(1, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
+    gainNode.gain.setValueAtTime(1.5, this.audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
 
     oscillator.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(this.masterGain);
 
     oscillator.start();
-    oscillator.stop(this.audioContext.currentTime + 0.5);
+    oscillator.stop(this.audioContext.currentTime + 0.3);
   }
 
   private createSnare() {
