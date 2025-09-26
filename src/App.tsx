@@ -24,7 +24,6 @@ function App() {
             <Music className="w-8 h-8 text-blue-400" />
             <h1 className="text-4xl font-bold text-white">Audio Sequencer</h1>
           </div>
-          <p className="text-gray-400">Create beats with our professional 16-step drum sequencer</p>
         </div>
 
         {/* Control Strip */}
