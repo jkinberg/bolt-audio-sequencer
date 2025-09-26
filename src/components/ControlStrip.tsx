@@ -28,7 +28,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
     <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg" data-testid="control-strip">
       <div className="flex flex-col gap-4">
         {/* Transport Controls */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <div className="flex items-center gap-4 flex-shrink-0">
             <button
               onClick={onPlayPause}
@@ -44,19 +44,19 @@ const ControlStrip: React.FC<ControlStripProps> = ({
           </div>
 
           {/* Tempo Control */}
-          <div className="flex items-center gap-4 w-full sm:min-w-64 sm:w-auto">
-            <label className="text-white font-medium flex-shrink-0 font-mono min-w-16 text-center">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <label className="text-white font-medium flex-shrink-0 font-mono text-sm">
               {bpm} BPM
             </label>
             <button
               onClick={() => onTempoChange(Math.max(30, tempo - 1))}
-              className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
+              className="flex items-center justify-center w-7 h-7 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
               aria-label="Decrease tempo"
               title="Decrease tempo by 1"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-3 h-3" />
             </button>
-            <div className="flex-1 min-w-32">
+            <div className="flex-1 min-w-20">
               <input
                 type="range"
                min="10"
@@ -68,11 +68,11 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             </div>
             <button
               onClick={() => onTempoChange(Math.min(200, tempo + 1))}
-              className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
+              className="flex items-center justify-center w-7 h-7 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
               aria-label="Increase tempo"
               title="Increase tempo by 1"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
             </button>
           </div>
         </div>
