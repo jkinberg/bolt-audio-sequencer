@@ -92,29 +92,20 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             ].map(({ type, label, color }) => (
               <button
                 key={type}
-                onClick={async (e) => {
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('Button clicked:', type);
                   
-                  // Initialize audio on first user interaction for iOS
-                  try {
-                    await audioEngine.initialize();
-                    console.log('Audio engine initialized successfully');
-                  } catch (error) {
-                    console.error('Failed to initialize audio engine:', error);
-                  }
+                  // Initialize audio synchronously in user event handler (critical for iOS)
+                  audioEngine.initialize();
                   
                   onSoundSelect(type);
                   onSoundPreview(type);
                 }}
-                onTouchStart={async (e) => {
-                  // Additional touch handler for iOS
-                  try {
-                    await audioEngine.initialize();
-                  } catch (error) {
-                    console.error('Touch initialization failed:', error);
-                  }
+                onTouchStart={(e) => {
+                  // Initialize audio on touch for iOS Safari
+                  audioEngine.initialize();
                 }}
                 className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${color} ${
                   selectedSound === type ? 'ring-2 ring-white scale-105' : ''

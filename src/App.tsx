@@ -18,11 +18,12 @@ function App() {
 
   // Initialize audio on any user interaction for iOS compatibility
   const handleUserInteraction = () => {
-    audioEngine.initialize().catch(console.error);
+    console.log('User interaction detected, initializing audio...');
+    audioEngine.initialize();
   };
 
   return (
-    <div className="min-h-screen bg-gray-900" onClick={handleUserInteraction} onTouchStart={handleUserInteraction}>
+    <div className="min-h-screen bg-gray-900" onClick={handleUserInteraction} onTouchStart={handleUserInteraction} onTouchEnd={handleUserInteraction}>
       <div className="h-screen max-w-4xl mx-auto w-full flex flex-col">
         {/* Header */}
         <div className="text-center flex-shrink-0 p-3 pb-2">

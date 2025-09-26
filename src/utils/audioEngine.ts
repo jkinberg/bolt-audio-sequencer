@@ -2,28 +2,46 @@ class AudioEngine {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private isInitialized: boolean = false;
+  private initializationPromise: Promise<void> | null = null;
 
-  async initialize() {
+  initialize() {
+    // Return existing promise if already initializing
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+    
+    // Return resolved promise if already initialized
+    if (this.audioContext && this.isInitialized) return;
+    
+    this.initializationPromise = this.doInitialize();
+    return this.initializationPromise;
+  }
+
+  private async doInitialize() {
     if (this.audioContext && this.isInitialized) return;
     
     try {
+      console.log('Initializing AudioContext...');
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      this.masterGain = this.audioContext.createGain();
+      this.masterGain.gain.value = 0.7;
+      this.masterGain.connect(this.audioContext.destination);
+      
+      // Resume audio context if suspended (critical for iOS)
+      if (this.audioContext.state === 'suspended') {
+        console.log('AudioContext suspended, attempting to resume...');
+        await this.audioContext.resume();
+        console.log('AudioContext resumed, state:', this.audioContext.state);
+      }
+      
+      this.isInitialized = true;
+      console.log('AudioContext initialized successfully, state:', this.audioContext.state);
     } catch (error) {
-      console.error('Failed to create AudioContext:', error);
-      return;
+      console.error('Failed to initialize AudioContext:', error);
+      this.initializationPromise = null;
+      throw error;
     }
-    
-    this.masterGain = this.audioContext.createGain();
-    this.masterGain.gain.value = 0.7;
-    this.masterGain.connect(this.audioContext.destination);
-    
-    // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
-    }
-    
-    this.isInitialized = true;
-    console.log('AudioContext initialized, state:', this.audioContext.state);
   }
 
   private createKick() {
@@ -233,7 +251,15 @@ class AudioEngine {
 
   playSound(sound: string) {
     console.log('Playing sound:', sound);
-    this.initialize().then(() => {
+    
+    // Initialize if not already done
+    if (!this.isInitialized) {
+      console.log('AudioContext not initialized, initializing now...');
+      this.initialize();
+    }
+    
+    // Play sound immediately if initialized, or after initialization
+    const playNow = () => {
       switch (sound) {
         case 'kick':
           console.log('Creating kick sound');
@@ -255,7 +281,15 @@ class AudioEngine {
           this.createCowBell();
           break;
       }
-    }).catch(console.error);
+    };
+    
+    if (this.isInitialized && this.audioContext) {
+      playNow();
+    } else if (this.initializationPromise) {
+      this.initializationPromise.then(playNow).catch(console.error);
+    } else {
+      console.error('AudioContext not available');
+    }
   }
 }
 

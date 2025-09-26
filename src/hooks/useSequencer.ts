@@ -41,12 +41,8 @@ export const useSequencer = () => {
   const startSequencer = useCallback(() => {
     if (intervalRef.current) return;
     
-    // Initialize audio engine and wait for it to be ready
-    audioEngine.initialize().then(() => {
-      console.log('Audio engine initialized for playback');
-    }).catch(error => {
-      console.error('Failed to initialize audio engine:', error);
-    });
+    // Initialize audio engine synchronously
+    audioEngine.initialize();
     
     setSequencerState(prev => ({ ...prev, isPlaying: true }));
     
@@ -113,12 +109,8 @@ export const useSequencer = () => {
   const previewSound = useCallback((sound: SoundType) => {
     if (sound && sound !== 'delete') {
       console.log('Previewing sound:', sound);
-      audioEngine.initialize().then(() => {
-        console.log('Audio engine ready, playing sound:', sound);
-        audioEngine.playSound(sound);
-      }).catch(error => {
-        console.error('Failed to preview sound:', error);
-      });
+      audioEngine.initialize();
+      audioEngine.playSound(sound);
     }
   }, []);
 
