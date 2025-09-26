@@ -1,11 +1,18 @@
 class AudioEngine {
   private audioContext: AudioContext | null = null;
   private masterGain: GainNode | null = null;
+  private isInitialized: boolean = false;
 
   async initialize() {
-    if (this.audioContext) return;
+    if (this.audioContext && this.isInitialized) return;
     
-    this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    } catch (error) {
+      console.error('Failed to create AudioContext:', error);
+      return;
+    }
+    
     this.masterGain = this.audioContext.createGain();
     this.masterGain.gain.value = 0.7;
     this.masterGain.connect(this.audioContext.destination);
@@ -14,6 +21,9 @@ class AudioEngine {
     if (this.audioContext.state === 'suspended') {
       await this.audioContext.resume();
     }
+    
+    this.isInitialized = true;
+    console.log('AudioContext initialized, state:', this.audioContext.state);
   }
 
   private createKick() {
