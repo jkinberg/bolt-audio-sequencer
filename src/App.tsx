@@ -16,10 +16,10 @@ function App() {
   } = useSequencer();
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="h-screen bg-gray-900 p-4 flex flex-col">
+      <div className="max-w-4xl mx-auto flex-1 flex flex-col space-y-4">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center flex-shrink-0">
           <div className="flex items-center justify-center gap-3 mb-2">
             <Music className="w-8 h-8 text-blue-400" />
             <h1 className="text-4xl font-bold text-white">Audio Sequencer</h1>
@@ -28,27 +28,31 @@ function App() {
         </div>
 
         {/* Control Strip */}
-        <ControlStrip
-          isPlaying={sequencerState.isPlaying}
-          tempo={sequencerState.tempo}
-          selectedSound={selectedSound}
-          onPlayPause={togglePlayPause}
-          onTempoChange={updateTempo}
-          onSoundSelect={setSelectedSound}
-          onSoundPreview={previewSound}
-        />
+        <div className="flex-shrink-0">
+          <ControlStrip
+            isPlaying={sequencerState.isPlaying}
+            tempo={sequencerState.tempo}
+            selectedSound={selectedSound}
+            onPlayPause={togglePlayPause}
+            onTempoChange={updateTempo}
+            onSoundSelect={setSelectedSound}
+            onSoundPreview={previewSound}
+          />
+        </div>
 
         {/* Sequencer Grid */}
-        <SequencerGrid
-          steps={sequencerState.steps}
-          currentStep={sequencerState.currentStep}
-          isPlaying={sequencerState.isPlaying}
-          selectedSound={selectedSound}
-          onStepClick={assignSoundToStep}
-        />
+        <div className="flex-1 min-h-0">
+          <SequencerGrid
+            steps={sequencerState.steps}
+            currentStep={sequencerState.currentStep}
+            isPlaying={sequencerState.isPlaying}
+            selectedSound={selectedSound}
+            onStepClick={assignSoundToStep}
+          />
+        </div>
 
         {/* Usage Instructions */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg flex-shrink-0">
           <h3 className="text-white font-semibold mb-3">How to Use:</h3>
           <ul className="text-gray-300 space-y-2 text-sm">
             <li><span className="text-blue-400">1.</span> Select a sound (Kick, Snare, Hi-Hat, or Cymbal) from the control strip</li>

@@ -55,8 +55,8 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
   };
 
   return (
-    <div className="bg-gray-700 p-6 rounded-lg shadow-lg">
-      <div className="grid grid-cols-4 gap-4 w-full">
+    <div className="bg-gray-700 p-4 rounded-lg shadow-lg h-full flex flex-col">
+      <div className="grid grid-cols-4 gap-3 w-full flex-1">
         {steps.map((step) => {
           const isCurrentStep = isPlaying && currentStep === step.id - 1;
           const soundColor = getSoundColor(step.sound);
@@ -67,7 +67,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
               key={step.id}
               onClick={() => onStepClick(step.id)}
               className={`
-                relative w-full aspect-square rounded-lg border-2 transition-all duration-200 
+                relative w-full h-full rounded-lg border-2 transition-all duration-200 
                 ${isCurrentStep ? 'border-yellow-400 shadow-lg shadow-yellow-400/50' : 'border-gray-400'}
                 ${soundColor}
                 hover:scale-105 hover:shadow-lg
@@ -101,7 +101,7 @@ const SequencerGrid: React.FC<SequencerGridProps> = ({
       </div>
       
       {/* Instructions */}
-      <div className="mt-4 text-center text-gray-300 text-sm">
+      <div className="mt-3 text-center text-gray-300 text-sm flex-shrink-0">
         {selectedSound ? (
           <p>
             {selectedSound === 'delete' ? (
