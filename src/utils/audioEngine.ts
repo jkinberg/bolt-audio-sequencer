@@ -25,7 +25,7 @@ class AudioEngine {
 
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(60, this.audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(0.1, this.audioContext.currentTime + 0.5);
+    oscillator.frequency.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
 
     filter.type = 'lowpass';
     filter.frequency.value = 100;
