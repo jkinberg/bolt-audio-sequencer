@@ -3,6 +3,8 @@ class AudioEngine {
   private masterGain: GainNode | null = null;
   private isInitialized: boolean = false;
   private hasUserInteracted: boolean = false;
+  private visibilityChangeHandler: (() => void) | null = null;
+  private resumeHandler: (() => void) | null = null;
 
   // Must be called synchronously in a user event handler for iOS
   initializeSync() {
@@ -25,6 +27,9 @@ class AudioEngine {
       this.hasUserInteracted = true;
       this.isInitialized = true;
       
+      // Set up background/foreground recovery for iOS
+      this.setupBackgroundRecovery();
+      
       console.log('AudioContext created synchronously, state:', this.audioContext.state);
       
       // Resume if suspended (this can be async after creation)
@@ -44,13 +49,95 @@ class AudioEngine {
     }
   }
 
+  private setupBackgroundRecovery() {
+    if (!this.audioContext) return;
+
+    // Handle page visibility changes (background/foreground)
+    this.visibilityChangeHandler = () => {
+      if (!document.hidden && this.audioContext) {
+        console.log('App returned to foreground, checking audio context state:', this.audioContext.state);
+        
+        if (this.audioContext.state === 'suspended') {
+          console.log('AudioContext suspended, attempting to resume...');
+          this.audioContext.resume().then(() => {
+            console.log('AudioContext resumed successfully after backgrounding');
+          }).catch(error => {
+            console.error('Failed to resume AudioContext after backgrounding:', error);
+          });
+        }
+      }
+    };
+
+    // Handle audio context state changes
+    this.resumeHandler = () => {
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        console.log('AudioContext state changed to suspended, attempting resume...');
+        this.audioContext.resume().catch(error => {
+          console.error('Failed to resume AudioContext on state change:', error);
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+    this.audioContext.addEventListener('statechange', this.resumeHandler);
+  }
+
+  // Method to manually recover audio context
+  recoverAudioContext() {
+    if (!this.audioContext) {
+      console.log('No audio context to recover, reinitializing...');
+      return this.initializeSync();
+    }
+
+    if (this.audioContext.state === 'suspended') {
+      console.log('Recovering suspended audio context...');
+      return this.audioContext.resume().then(() => {
+        console.log('Audio context recovered successfully');
+        return true;
+      }).catch(error => {
+        console.error('Failed to recover audio context:', error);
+        // Try to reinitialize if recovery fails
+        this.cleanup();
+        return this.initializeSync();
+      });
+    }
+
+    if (this.audioContext.state === 'closed') {
+      console.log('Audio context closed, reinitializing...');
+      this.cleanup();
+      return this.initializeSync();
+    }
+
+    return true;
+  }
+
+  private cleanup() {
+    if (this.visibilityChangeHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+      this.visibilityChangeHandler = null;
+    }
+    
+    if (this.resumeHandler && this.audioContext) {
+      this.audioContext.removeEventListener('statechange', this.resumeHandler);
+      this.resumeHandler = null;
+    }
+    
+    this.audioContext = null;
+    this.masterGain = null;
+    this.isInitialized = false;
+  }
+
   // Legacy method for backward compatibility
   initialize() {
     return this.initializeSync();
   }
 
   isReady(): boolean {
-    return this.isInitialized && this.audioContext !== null && this.hasUserInteracted;
+    return this.isInitialized && 
+           this.audioContext !== null && 
+           this.hasUserInteracted && 
+           this.audioContext.state !== 'suspended' && 
+           this.audioContext.state !== 'closed';
   }
 
   getAudioContextState(): string {
@@ -298,6 +385,16 @@ class AudioEngine {
   playSound(sound: string) {
     console.log('Playing sound:', sound);
     
+    // Check if audio context needs recovery
+    if (this.audioContext && (this.audioContext.state === 'suspended' || this.audioContext.state === 'closed')) {
+      console.log('Audio context needs recovery before playing sound');
+      const recovered = this.recoverAudioContext();
+      if (!recovered) {
+        console.error('Failed to recover audio context');
+        return;
+      }
+    }
+    
     // Initialize if not already done
     if (!this.isInitialized) {
       console.log('AudioContext not initialized, initializing now...');
@@ -336,6 +433,11 @@ class AudioEngine {
     } else {
       console.error('AudioContext not available');
     }
+  }
+
+  // Cleanup method for component unmounting
+  destroy() {
+    this.cleanup();
   }
 }
 

@@ -97,6 +97,12 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                   e.stopPropagation();
                   console.log('Button clicked:', type);
                   
+                  // Check if audio context needs recovery first
+                  if (audioEngine.getAudioContextState() === 'suspended') {
+                    console.log('Audio context suspended, recovering...');
+                    audioEngine.recoverAudioContext();
+                  }
+                  
                   // Initialize audio synchronously - CRITICAL for iOS Safari
                   const initialized = audioEngine.initializeSync();
                   console.log('Audio initialized:', initialized, 'State:', audioEngine.getAudioContextState());
@@ -111,6 +117,9 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                 onTouchStart={(e) => {
                   e.preventDefault();
                   // Initialize audio on touch start for iOS Safari
+                  if (audioEngine.getAudioContextState() === 'suspended') {
+                    audioEngine.recoverAudioContext();
+                  }
                   const initialized = audioEngine.initializeSync();
                   console.log('Touch - Audio initialized:', initialized, 'State:', audioEngine.getAudioContextState());
                 }}

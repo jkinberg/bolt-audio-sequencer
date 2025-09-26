@@ -73,8 +73,25 @@ function App() {
           audioEngine.testBeep();
         }, 100);
       }
+    } else if (audioEngine.getAudioContextState() === 'suspended') {
+      // Try to recover if suspended
+      console.log('Audio context suspended, attempting recovery...');
+      audioEngine.recoverAudioContext();
     }
   };
+
+  // Add effect to handle audio recovery on app focus
+  React.useEffect(() => {
+    const handleFocus = () => {
+      if (audioEngine.isInitialized && !audioEngine.isReady()) {
+        console.log('App focused and audio needs recovery');
+        audioEngine.recoverAudioContext();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
 
   return (
     <div 
