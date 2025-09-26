@@ -120,34 +120,43 @@ class AudioEngine {
   private createCymbal() {
     if (!this.audioContext || !this.masterGain) return;
 
-    const oscillators = [];
+    // Create noise buffer for realistic cymbal sound
+    const bufferSize = this.audioContext.sampleRate * 0.8;
+    const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    
+    const noiseSource = this.audioContext.createBufferSource();
+    noiseSource.buffer = buffer;
+    
     const gainNode = this.audioContext.createGain();
     
-    // Multiple oscillators for complex cymbal sound
-    const frequencies = [523, 659, 784, 1047, 1319, 1568];
-    
-    frequencies.forEach(freq => {
-      const osc = this.audioContext!.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq;
-      osc.connect(gainNode);
-      oscillators.push(osc);
-    });
-
+    // High-pass filter for bright cymbal sound
     const filter = this.audioContext.createBiquadFilter();
     filter.type = 'highpass';
-    filter.frequency.value = 3000;
+    filter.frequency.value = 4000;
+    
+    // Additional filter for shaping
+    const filter2 = this.audioContext.createBiquadFilter();
+    filter2.type = 'peaking';
+    filter2.frequency.value = 8000;
+    filter2.Q.value = 2;
+    filter2.gain.value = 6;
 
-    gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+    // Much quieter and shorter duration
+    gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.6);
 
-    gainNode.connect(filter);
+    noiseSource.connect(filter);
+    filter.connect(filter2);
+    filter2.connect(gainNode);
     filter.connect(this.masterGain);
 
-    oscillators.forEach(osc => {
-      osc.start();
-      osc.stop(this.audioContext!.currentTime + 1);
-    });
+    noiseSource.start();
+    noiseSource.stop(this.audioContext.currentTime + 0.6);
   }
 
   private createHandClap() {
