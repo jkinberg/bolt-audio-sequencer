@@ -24,10 +24,10 @@ const ControlStrip: React.FC<ControlStripProps> = ({
   const bpm = Math.round(60000 / (tempo * 4)); // Convert to BPM (assuming 16th notes)
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-      <div className="flex flex-wrap items-center gap-6">
+    <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-6">
         {/* Transport Controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-shrink-0">
           <button
             onClick={onPlayPause}
             className="flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors duration-200"
@@ -42,9 +42,9 @@ const ControlStrip: React.FC<ControlStripProps> = ({
         </div>
 
         {/* Tempo Control */}
-        <div className="flex items-center gap-4 min-w-64">
-          <label className="text-white font-medium">Tempo</label>
-          <div className="flex-1">
+        <div className="flex items-center gap-4 w-full lg:min-w-64 lg:w-auto">
+          <label className="text-white font-medium flex-shrink-0">Tempo</label>
+          <div className="flex-1 min-w-32">
             <input
               type="range"
               min="50"
@@ -54,15 +54,17 @@ const ControlStrip: React.FC<ControlStripProps> = ({
               className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
             />
           </div>
-          <span className="text-white text-sm font-mono w-16 text-right">
+          <span className="text-white text-sm font-mono w-16 text-right flex-shrink-0">
             {bpm} BPM
           </span>
         </div>
 
         {/* Sound Selection */}
-        <div className="flex items-center gap-3">
-          <label className="text-white font-medium">Sounds:</label>
-          <div className="flex gap-2">
+        <div className="w-full lg:w-auto">
+          <label className="text-white font-medium mb-2 block lg:hidden">Sounds:</label>
+          <label className="text-white font-medium mr-3 hidden lg:inline">Sounds:</label>
+          <div className="flex gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <div className="flex gap-2 flex-nowrap">
             {[
               { type: 'kick' as const, label: 'Kick', color: 'bg-red-600 hover:bg-red-700' },
               { type: 'snare' as const, label: 'Snare', color: 'bg-orange-600 hover:bg-orange-700' },
@@ -78,7 +80,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                   onSoundSelect(type);
                   onSoundPreview(type);
                 }}
-                className={`px-4 py-2 rounded-md text-white font-medium transition-all duration-200 ${color} ${
+                className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0 ${color} ${
                   selectedSound === type ? 'ring-2 ring-white scale-105' : ''
                 }`}
                 title={`Click to select and preview ${label}`}
@@ -90,7 +92,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             {/* Delete Button */}
             <button
               onClick={() => onSoundSelect('delete')}
-              className={`px-4 py-2 rounded-md text-white font-medium transition-all duration-200 bg-red-600 hover:bg-red-700 flex items-center gap-2 ${
+              className={`px-3 py-2 rounded-md text-white font-medium transition-all duration-200 bg-red-600 hover:bg-red-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
                 selectedSound === 'delete' ? 'ring-2 ring-white scale-105' : ''
               }`}
               title="Click to select delete mode, then click steps to remove sounds"
@@ -98,6 +100,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
               <Trash2 className="w-4 h-4" />
               Delete
             </button>
+            </div>
           </div>
         </div>
       </div>
