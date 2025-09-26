@@ -44,7 +44,9 @@ const ControlStrip: React.FC<ControlStripProps> = ({
 
           {/* Tempo Control */}
           <div className="flex items-center gap-4 w-full sm:min-w-64 sm:w-auto">
-            <label className="text-white font-medium flex-shrink-0">Tempo</label>
+            <label className="text-white font-medium flex-shrink-0 font-mono min-w-16 text-center">
+              {bpm} BPM
+            </label>
             <button
               onClick={() => onTempoChange(Math.max(30, tempo - 1))}
               className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
@@ -71,9 +73,6 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             >
               <Plus className="w-4 h-4" />
             </button>
-            <span className="text-white text-sm font-mono w-16 text-right flex-shrink-0">
-              {bpm} BPM
-            </span>
           </div>
         </div>
 
