@@ -1,5 +1,5 @@
 import React from 'react';
-import { Music } from 'lucide-react';
+import { Music, VolumeX } from 'lucide-react';
 import ControlStrip from './components/ControlStrip';
 import SequencerGrid from './components/SequencerGrid';
 import { useSequencer } from './hooks/useSequencer';
@@ -15,6 +15,49 @@ function App() {
     assignSoundToStep,
     previewSound,
   } = useSequencer();
+
+  // Detect if user is on iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const [showIOSWarning, setShowIOSWarning] = React.useState(false);
+
+  // Check for iOS mute switch issue
+  React.useEffect(() => {
+    if (isIOS && audioEngine.isReady()) {
+      // Test if audio can play by attempting a very quiet test
+      const testAudio = () => {
+        try {
+          const ctx = audioEngine.getAudioContext();
+          if (ctx && ctx.state === 'running') {
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.frequency.value = 440;
+            gainNode.gain.value = 0.001; // Very quiet
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            oscillator.start();
+            oscillator.stop(ctx.currentTime + 0.01);
+            
+            // If we get here without error, audio should work
+            // But iOS mute switch can still block it
+            setTimeout(() => {
+              if (audioEngine.isReady() && ctx.state === 'running') {
+                setShowIOSWarning(true);
+              }
+            }, 1000);
+          }
+        } catch (error) {
+          console.log('Audio test failed:', error);
+        }
+      };
+      
+      // Delay the test to allow user interaction
+      const timer = setTimeout(testAudio, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isIOS]);
 
   // Initialize audio on user interaction - CRITICAL for iOS Safari
   const handleUserInteraction = () => {
@@ -54,6 +97,25 @@ function App() {
             {audioEngine.isReady() && ` (${audioEngine.getAudioContextState()})`}
           </div>
         </div>
+
+        {/* iOS Mute Switch Warning */}
+        {isIOS && showIOSWarning && (
+          <div className="flex-shrink-0 px-4 pb-3">
+            <div className="bg-orange-600 border border-orange-500 rounded-lg p-3 flex items-start gap-3">
+              <VolumeX className="w-5 h-5 text-orange-100 flex-shrink-0 mt-0.5" />
+              <div className="text-orange-100 text-sm">
+                <p className="font-medium mb-1">iPhone Audio Tip:</p>
+                <p>If you can't hear sounds, check that your iPhone's Ring/Silent switch (on the left side) is set to Ring mode. iOS Safari requires this for web audio to work.</p>
+                <button 
+                  onClick={() => setShowIOSWarning(false)}
+                  className="mt-2 text-xs underline hover:no-underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Control Strip */}
         <div className="flex-shrink-0 px-4 pb-3">

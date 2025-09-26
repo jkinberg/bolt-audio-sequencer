@@ -57,6 +57,10 @@ class AudioEngine {
     return this.audioContext?.state || 'not-initialized';
   }
 
+  getAudioContext(): AudioContext | null {
+    return this.audioContext;
+  }
+
   // Test method to create a simple beep for debugging
   testBeep() {
     if (!this.isReady()) {
