@@ -6,7 +6,7 @@ export const useSequencer = () => {
   const [sequencerState, setSequencerState] = useState<SequencerState>({
     isPlaying: false,
     currentStep: 0,
-    tempo: 500, // milliseconds per step
+    tempo: 64, // BPM
     steps: Array.from({ length: 16 }, (_, i) => ({
       id: i + 1,
       sound: null,
@@ -46,9 +46,12 @@ export const useSequencer = () => {
     
     setSequencerState(prev => ({ ...prev, isPlaying: true }));
     
+    // Convert BPM to milliseconds per step (16th notes)
+    const msPerStep = 60000 / (sequencerState.tempo * 4);
+    
     intervalRef.current = setInterval(() => {
       nextStep();
-    }, sequencerState.tempo);
+    }, msPerStep);
   }, [nextStep, sequencerState.tempo]);
 
   const stopSequencer = useCallback(() => {
@@ -78,9 +81,10 @@ export const useSequencer = () => {
     // Restart the sequencer with new tempo if playing
     if (sequencerState.isPlaying && intervalRef.current) {
       clearInterval(intervalRef.current);
+      const msPerStep = 60000 / (newTempo * 4);
       intervalRef.current = setInterval(() => {
         nextStep();
-      }, newTempo);
+      }, msPerStep);
     }
   }, [sequencerState.isPlaying, nextStep]);
 

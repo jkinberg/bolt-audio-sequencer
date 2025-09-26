@@ -21,7 +21,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
   onSoundSelect,
   onSoundPreview,
 }) => {
-  const bpm = Math.round(60000 / (tempo * 4)); // Convert to BPM (assuming 16th notes)
+  const bpm = tempo; // Tempo is now directly in BPM
 
   return (
     <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg">
@@ -46,7 +46,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
           <div className="flex items-center gap-4 w-full sm:min-w-64 sm:w-auto">
             <label className="text-white font-medium flex-shrink-0">Tempo</label>
             <button
-              onClick={() => onTempoChange(Math.max(50, tempo - 1))}
+              onClick={() => onTempoChange(Math.max(60, tempo - 1))}
               className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
               aria-label="Decrease tempo"
               title="Decrease tempo by 1"
@@ -56,15 +56,15 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             <div className="flex-1 min-w-32">
               <input
                 type="range"
-                min="50"
-                max="1000"
+                min="60"
+                max="200"
                 value={tempo}
                 onChange={(e) => onTempoChange(Number(e.target.value))}
                 className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               />
             </div>
             <button
-              onClick={() => onTempoChange(Math.min(1000, tempo + 1))}
+              onClick={() => onTempoChange(Math.min(200, tempo + 1))}
               className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
               aria-label="Increase tempo"
               title="Increase tempo by 1"
