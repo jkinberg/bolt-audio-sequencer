@@ -79,7 +79,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
 
         {/* Sound Selection */}
         <div className="w-full">
-          <div className="flex gap-2 overflow-x-auto pb-2 px-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 touch-scroll">
+          <div className="flex gap-2 overflow-x-auto py-2 px-1 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 touch-scroll">
             <div className="flex gap-2 flex-nowrap">
             {[
               { type: 'kick' as const, label: 'Kick', color: 'bg-red-600 hover:bg-red-700' },
