@@ -19,3 +19,21 @@
 .scrollbar-thin::-webkit-scrollbar {
   height: 6px;
 }
+
+/* Enable smooth touch scrolling on mobile */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar on mobile for cleaner look */
+@media (max-width: 768px) {
+  .touch-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .touch-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
