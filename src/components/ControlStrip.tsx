@@ -56,14 +56,14 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             >
               <Minus className="w-3 h-3" />
             </button>
-            <div className="flex-1 min-w-20">
+            <div className="w-32 flex-shrink-0">
               <input
                 type="range"
                min="10"
                 max="200"
                 value={tempo}
                 onChange={(e) => onTempoChange(Number(e.target.value))}
-                className="w-full max-w-xs h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               />
             </div>
             <button
