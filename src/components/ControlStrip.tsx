@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Trash2 } from 'lucide-react';
+import { Play, Pause, Trash2, Minus, Plus } from 'lucide-react';
 import { SoundType } from '../types';
 
 interface ControlStripProps {
@@ -45,6 +45,14 @@ const ControlStrip: React.FC<ControlStripProps> = ({
           {/* Tempo Control */}
           <div className="flex items-center gap-4 w-full sm:min-w-64 sm:w-auto">
             <label className="text-white font-medium flex-shrink-0">Tempo</label>
+            <button
+              onClick={() => onTempoChange(Math.max(50, tempo - 1))}
+              className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
+              aria-label="Decrease tempo"
+              title="Decrease tempo by 1"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
             <div className="flex-1 min-w-32">
               <input
                 type="range"
@@ -55,6 +63,14 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                 className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               />
             </div>
+            <button
+              onClick={() => onTempoChange(Math.min(1000, tempo + 1))}
+              className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
+              aria-label="Increase tempo"
+              title="Increase tempo by 1"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
             <span className="text-white text-sm font-mono w-16 text-right flex-shrink-0">
               {bpm} BPM
             </span>
