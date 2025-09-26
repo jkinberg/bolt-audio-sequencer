@@ -3,6 +3,7 @@ import { Music } from 'lucide-react';
 import ControlStrip from './components/ControlStrip';
 import SequencerGrid from './components/SequencerGrid';
 import { useSequencer } from './hooks/useSequencer';
+import { audioEngine } from './utils/audioEngine';
 
 function App() {
   const {
@@ -15,8 +16,13 @@ function App() {
     previewSound,
   } = useSequencer();
 
+  // Initialize audio on any user interaction for iOS compatibility
+  const handleUserInteraction = () => {
+    audioEngine.initialize().catch(console.error);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-900" onClick={handleUserInteraction} onTouchStart={handleUserInteraction}>
       <div className="h-screen max-w-4xl mx-auto w-full flex flex-col">
         {/* Header */}
         <div className="text-center flex-shrink-0 p-3 pb-2">

@@ -41,8 +41,12 @@ export const useSequencer = () => {
   const startSequencer = useCallback(() => {
     if (intervalRef.current) return;
     
-    // Initialize audio engine
-    audioEngine.initialize();
+    // Initialize audio engine and wait for it to be ready
+    audioEngine.initialize().then(() => {
+      console.log('Audio engine initialized for playback');
+    }).catch(error => {
+      console.error('Failed to initialize audio engine:', error);
+    });
     
     setSequencerState(prev => ({ ...prev, isPlaying: true }));
     

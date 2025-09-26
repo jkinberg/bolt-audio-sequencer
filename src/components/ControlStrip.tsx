@@ -94,6 +94,8 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                 key={type}
                 onClick={() => {
                   console.log('Button clicked:', type);
+                  // Initialize audio on first user interaction for iOS
+                  audioEngine.initialize();
                   onSoundSelect(type);
                   onSoundPreview(type);
                 }}
