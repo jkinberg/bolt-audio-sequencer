@@ -63,7 +63,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
                 max="200"
                 value={tempo}
                 onChange={(e) => onTempoChange(Number(e.target.value))}
-                className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full max-w-xs h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
               />
             </div>
             <button
