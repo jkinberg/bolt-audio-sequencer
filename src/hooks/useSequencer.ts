@@ -1,0 +1,131 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { SequencerState, Step, SoundType } from '../types';
+import { audioEngine } from '../utils/audioEngine';
+
+export const useSequencer = () => {
+  const [sequencerState, setSequencerState] = useState<SequencerState>({
+    isPlaying: false,
+    currentStep: 0,
+    tempo: 500, // milliseconds per step
+    steps: Array.from({ length: 16 }, (_, i) => ({
+      id: i + 1,
+      sound: null,
+      isActive: false,
+    })),
+  });
+
+  const [selectedSound, setSelectedSound] = useState<SoundType>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const playStep = useCallback((step: Step) => {
+    if (step.sound) {
+      audioEngine.playSound(step.sound);
+    }
+  }, []);
+
+  const nextStep = useCallback(() => {
+    setSequencerState(prev => {
+      const nextStepIndex = (prev.currentStep + 1) % 16;
+      const currentStep = prev.steps[nextStepIndex];
+      
+      // Play sound for the current step
+      playStep(currentStep);
+      
+      return {
+        ...prev,
+        currentStep: nextStepIndex,
+      };
+    });
+  }, [playStep]);
+
+  const startSequencer = useCallback(() => {
+    if (intervalRef.current) return;
+    
+    // Initialize audio engine
+    audioEngine.initialize();
+    
+    setSequencerState(prev => ({ ...prev, isPlaying: true }));
+    
+    intervalRef.current = setInterval(() => {
+      nextStep();
+    }, sequencerState.tempo);
+  }, [nextStep, sequencerState.tempo]);
+
+  const stopSequencer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    setSequencerState(prev => ({
+      ...prev,
+      isPlaying: false,
+      currentStep: 0,
+    }));
+  }, []);
+
+  const togglePlayPause = useCallback(() => {
+    if (sequencerState.isPlaying) {
+      stopSequencer();
+    } else {
+      startSequencer();
+    }
+  }, [sequencerState.isPlaying, startSequencer, stopSequencer]);
+
+  const updateTempo = useCallback((newTempo: number) => {
+    setSequencerState(prev => ({ ...prev, tempo: newTempo }));
+    
+    // Restart the sequencer with new tempo if playing
+    if (sequencerState.isPlaying && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        nextStep();
+      }, newTempo);
+    }
+  }, [sequencerState.isPlaying, nextStep]);
+
+  const assignSoundToStep = useCallback((stepId: number) => {
+    if (!selectedSound) return;
+    
+    setSequencerState(prev => ({
+      ...prev,
+      steps: prev.steps.map(step =>
+        step.id === stepId ? { 
+          ...step, 
+          sound: selectedSound === 'delete' 
+            ? null 
+            : step.sound === selectedSound 
+              ? null 
+              : selectedSound 
+        } : step
+      ),
+    }));
+  }, [selectedSound]);
+
+  const previewSound = useCallback((sound: SoundType) => {
+    if (sound) {
+      audioEngine.initialize().then(() => {
+        audioEngine.playSound(sound);
+      });
+    }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  return {
+    sequencerState,
+    selectedSound,
+    setSelectedSound,
+    togglePlayPause,
+    updateTempo,
+    assignSoundToStep,
+    previewSound,
+  };
+};
