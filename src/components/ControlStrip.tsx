@@ -46,7 +46,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
           <div className="flex items-center gap-4 w-full sm:min-w-64 sm:w-auto">
             <label className="text-white font-medium flex-shrink-0">Tempo</label>
             <button
-              onClick={() => onTempoChange(Math.max(60, tempo - 1))}
+              onClick={() => onTempoChange(Math.max(30, tempo - 1))}
               className="flex items-center justify-center w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors duration-200 flex-shrink-0"
               aria-label="Decrease tempo"
               title="Decrease tempo by 1"
@@ -56,7 +56,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             <div className="flex-1 min-w-32">
               <input
                 type="range"
-                min="60"
+                min="30"
                 max="200"
                 value={tempo}
                 onChange={(e) => onTempoChange(Number(e.target.value))}
