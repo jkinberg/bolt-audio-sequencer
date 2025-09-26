@@ -58,7 +58,7 @@ const ControlStrip: React.FC<ControlStripProps> = ({
             <div className="flex-1 min-w-32">
               <input
                 type="range"
-                min="30"
+               min="10"
                 max="200"
                 value={tempo}
                 onChange={(e) => onTempoChange(Number(e.target.value))}
