@@ -139,6 +139,88 @@ test.describe('Audio Sequencer - Mobile Safari', () => {
     await expect(page.locator('text=120 BPM')).toBeVisible();
   });
 
+  test('should be able to share patterns via URL', async ({ page }) => {
+    // Create a pattern
+    await page.click('button:has-text("Kick")');
+    await page.click('[data-testid="sequencer-grid"] button:first-child');
+    
+    await page.click('button:has-text("Snare")');
+    await page.click('[data-testid="sequencer-grid"] button:nth-child(5)');
+    
+    // Set tempo
+    await page.fill('input[type="range"]', '120');
+    
+    // Click share button
+    await page.click('button:has-text("Share Pattern")');
+    
+    // Check if share interface appears
+    await expect(page.locator('text=Share Your Pattern')).toBeVisible();
+    await expect(page.locator('input[readonly]')).toBeVisible();
+    
+    // Get the share URL
+    const shareUrl = await page.locator('input[readonly]').inputValue();
+    expect(shareUrl).toContain('t=120');
+    expect(shareUrl).toContain('p=');
+    expect(shareUrl).toMatch(/p=[0-6]{16}/);
+    
+    // Test copy functionality
+    await page.click('button[title="Copy URL"]');
+    await expect(page.locator('text=URL copied, ready to paste and share!')).toBeVisible();
+  });
+
+  test('should load patterns from URL parameters', async ({ page }) => {
+    // Navigate with URL parameters
+    await page.goto('/?t=140&p=1000200030004000');
+    await page.waitForLoadState('networkidle');
+    
+    // Check if tempo is loaded
+    await expect(page.locator('text=140 BPM')).toBeVisible();
+    
+    // Check if pattern is loaded
+    const firstStep = page.locator('[data-testid="sequencer-grid"] button:first-child');
+    await expect(firstStep).toHaveClass(/bg-red-500/); // Kick sound
+    
+    const fifthStep = page.locator('[data-testid="sequencer-grid"] button:nth-child(5)');
+    await expect(fifthStep).toHaveClass(/bg-orange-500/); // Snare sound
+    
+    const ninthStep = page.locator('[data-testid="sequencer-grid"] button:nth-child(9)');
+    await expect(ninthStep).toHaveClass(/bg-yellow-500/); // Hi-hat sound
+    
+    const thirteenthStep = page.locator('[data-testid="sequencer-grid"] button:nth-child(13)');
+    await expect(thirteenthStep).toHaveClass(/bg-green-500/); // Cymbal sound
+  });
+
+  test('should handle invalid URL parameters gracefully', async ({ page }) => {
+    // Test with invalid parameters
+    await page.goto('/?t=999&p=invalid');
+    await page.waitForLoadState('networkidle');
+    
+    // Should fall back to defaults
+    await expect(page.locator('text=64 BPM')).toBeVisible(); // Default tempo
+    
+    // Grid should be empty (no sounds assigned)
+    const steps = page.locator('[data-testid="sequencer-grid"] button');
+    const count = await steps.count();
+    
+    for (let i = 0; i < count; i++) {
+      const step = steps.nth(i);
+      await expect(step).not.toHaveClass(/bg-red-500|bg-orange-500|bg-yellow-500|bg-green-500|bg-purple-500|bg-indigo-500/);
+    }
+  });
+
+  test('should validate URL parameter ranges', async ({ page }) => {
+    // Test tempo bounds
+    await page.goto('/?t=25&p=0000000000000000'); // Below minimum
+    await expect(page.locator('text=64 BPM')).toBeVisible(); // Should use default
+    
+    await page.goto('/?t=250&p=0000000000000000'); // Above maximum  
+    await expect(page.locator('text=64 BPM')).toBeVisible(); // Should use default
+    
+    // Test valid tempo
+    await page.goto('/?t=120&p=0000000000000000');
+    await expect(page.locator('text=120 BPM')).toBeVisible();
+  });
+
   test('should be able to play and pause sequencer', async ({ page }) => {
     // Add some sounds first
     await page.click('button:has-text("Kick")');
