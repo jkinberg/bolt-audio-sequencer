@@ -14,8 +14,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({ tempo, steps }) => {
   const [copied, setCopied] = useState(false);
 
   const handleShare = () => {
+    // Auto-copy URL when share button is clicked
+    handleCopy();
     setIsSharing(true);
-    setCopied(false);
   };
 
   const handleCopy = async () => {
