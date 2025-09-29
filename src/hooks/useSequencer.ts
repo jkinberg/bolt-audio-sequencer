@@ -1,18 +1,28 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SequencerState, Step, SoundType } from '../types';
 import { audioEngine } from '../utils/audioEngine';
+import { parseUrlParams } from '../utils/urlUtils';
 
 export const useSequencer = () => {
-  const [sequencerState, setSequencerState] = useState<SequencerState>({
-    isPlaying: false,
-    currentStep: 0,
-    tempo: 64, // BPM
-    steps: Array.from({ length: 16 }, (_, i) => ({
+  // Initialize state with URL parameters if available
+  const initializeState = (): SequencerState => {
+    const urlParams = parseUrlParams();
+    
+    const steps = Array.from({ length: 16 }, (_, i) => ({
       id: i + 1,
-      sound: null,
+      sound: urlParams.pattern ? urlParams.pattern[i] : null,
       isActive: false,
-    })),
-  });
+    }));
+    
+    return {
+      isPlaying: false,
+      currentStep: 0,
+      tempo: urlParams.tempo || 64, // BPM
+      steps,
+    };
+  };
+
+  const [sequencerState, setSequencerState] = useState<SequencerState>(initializeState);
 
   const [selectedSound, setSelectedSound] = useState<SoundType>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

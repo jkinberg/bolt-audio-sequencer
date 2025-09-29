@@ -2,6 +2,7 @@ import React from 'react';
 import { Music, VolumeX } from 'lucide-react';
 import ControlStrip from './components/ControlStrip';
 import SequencerGrid from './components/SequencerGrid';
+import ShareButton from './components/ShareButton';
 import { useSequencer } from './hooks/useSequencer';
 import { audioEngine } from './utils/audioEngine';
 
@@ -155,6 +156,14 @@ function App() {
             isPlaying={sequencerState.isPlaying}
             selectedSound={selectedSound}
             onStepClick={assignSoundToStep}
+          />
+        </div>
+
+        {/* Share Button */}
+        <div className="flex-shrink-0 px-4 py-3">
+          <ShareButton
+            tempo={sequencerState.tempo}
+            steps={sequencerState.steps}
           />
         </div>
       </div>
