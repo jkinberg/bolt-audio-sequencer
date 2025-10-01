@@ -2,7 +2,7 @@
 
 A modern, web-based drum machine and audio sequencer built with React, TypeScript, and the Web Audio API. Create beats and rhythms with a classic 16-step sequencer interface.
 
-![Audio Sequencer](https://images.pexels.com/photos/164938/pexels-photo-164938.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop)
+![Audio Sequencer](https://audio-sequencer-8ygz.bolt.host/audio-sequencer-social-image.png)
 
 ## 🎵 Features
 
